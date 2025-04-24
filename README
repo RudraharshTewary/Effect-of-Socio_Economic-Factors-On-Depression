@@ -1,0 +1,95 @@
+# Effect of CD34+ Concentration on Pediatric HSCT Outcomes
+
+This repository contains the analysis and code for the project investigating the effect of CD34+ cell concentration on the outcomes of Hematopoietic Stem Cell Transplants (HSCT) in children. The analysis aims to verify existing research suggesting that higher CD34+ concentrations are associated with improved survival rates in pediatric patients undergoing unrelated allogeneic HSCT (UHSCT).
+
+**Author:** Rudraharsh Tewary (University of Toronto)
+**Date:** December 15, 2023
+
+## Overview
+
+Hematopoietic stem cell transplants are a crucial treatment for various malignant and non-malignant hematological disorders in children. Due to the vulnerability of pediatric patients and the lower prevalence rates leading to smaller datasets, understanding factors influencing transplant success is vital. This project focuses specifically on the concentration of CD34+ cells, a key component in transplants, and its correlation with patient survival status.
+
+## Dataset
+
+*   **Source:** UC Irvine Machine Learning Repository
+*   **Name:** Bone Marrow Transplants: Children [Dataset Link](https://archive.ics.uci.edu/dataset/565/bone+marrow+transplant+children) (Reference [7] in the report)
+*   **Description:** Contains data for 187 pediatric patients treated with Unrelated Allogeneic HSCT (UHSCT).
+*   **Features:** 37 features (12 continuous, 25 discrete) covering patient demographics, donor characteristics, disease specifics, HLA matching, cell counts (including `CD34kgx10d6`), and outcome variables.
+*   **Data Dictionary:** Included in the Appendix of the project report (`.pdf` file).
+
+## Methodology
+
+1.  **Data Cleaning & Preprocessing:**
+    *   Handled missing values represented as '?'.
+    *   Corrected data types.
+    *   Performed analysis primarily on the **complete subset** of the data (142 observations) due to missing values in critical features ('RecipientCMV', 'CMVstatus', 'extcGvHD').
+    *   Transformed time-to-event features (`ANCrecovery`, `PLTrecovery`, `time_to_aGvHD_III_IV`) where '1000000' indicated non-occurrence/non-recovery. New binary indicator features (`ANC_recovered`, `PLT_recovered`) were created, and `time_to_aGvHD_III_IV` was similarly adjusted (see code/report for details).
+    *   One-Hot Encoded the categorical `Disease` feature for modeling.
+2.  **Exploratory Data Analysis (EDA):**
+    *   Visualized data distributions (histograms).
+    *   Analyzed missing data patterns.
+    *   Generated a correlation heatmap to understand feature relationships.
+    *   EDA performed using R (`.Rmd` file provided).
+3.  **Modeling:**
+    *   **Objective:** Classify patient `survival_status` (0=Alive, 1=Dead).
+    *   **Models Tested:** Logistic Regression, Decision Tree, Random Forest (chosen for binary classification task and interpretability).
+    *   **Evaluation:** Used 10-fold Cross-Validation accuracy due to the limited dataset size.
+    *   Modeling performed using Python (`.ipynb` file provided).
+4.  **Interpretation:**
+    *   **Feature Importance:** Calculated using Mean Decrease in Impurity from the best-performing model (Random Forest).
+    *   **Partial Dependence Plots (PDP):** Generated to visualize the marginal effect of the key feature (`CD34kgx10d6`) on the predicted probability of the outcome.
+
+## Results
+
+*   The Random Forest classifier achieved the highest cross-validation accuracy (72%).
+*   Overall model performance was relatively low, likely constrained by the small dataset size (approx. 4 observations per feature on the complete subset, less than the ideal 10).
+*   The feature `CD34kgx10d6` (CD34+ cell dose per kg) was identified as the **most important predictor** by the Random Forest model.
+*   The Partial Dependence Plot for `CD34kgx10d6` indicated a **positive correlation between higher CD34+ concentration and increased patient survival** (i.e., a lower probability of the 'Dead' outcome), aligning with the initial hypothesis and existing literature.
+
+## Conclusion
+
+The analysis suggests that higher CD34+ cell concentration is correlated with better survival outcomes in pediatric UHSCT patients within this dataset. However, the relatively low accuracy of the classification models indicates that this conclusion should be considered preliminary. Access to a larger dataset would be beneficial for building more robust models and confirming these findings with greater confidence.
+
+## Repository Structure
+
+*   `[Your_Report_Name].pdf`: The full project report detailing the analysis.
+*   `Code_For_Model_Test_And_Fit.ipynb`: Jupyter notebook containing Python code for data loading, preprocessing, model training, evaluation, and interpretation (Feature Importance, PDP).
+*   `[Your_EDA_Script_Name].Rmd` (or `.R`): R script/markdown file for Exploratory Data Analysis.
+*   `Bmarrow_complete.csv`: The subset of the data with complete records used for modeling.
+*   `[Original_Dataset_Name].csv` (Optional): The original dataset file if included.
+*   `README.md`: This file.
+
+## Setup and Usage
+
+1.  **Clone the repository:**
+    ```bash
+    git clone [your-repo-link]
+    cd [your-repo-name]
+    ```
+2.  **EDA (R):**
+    *   Ensure you have R and RStudio (or another R environment) installed.
+    *   Install necessary R packages (e.g., `tidyverse`, `DataExplorer`, `ggplot2`, etc. - *list specific packages used in your Rmd*).
+    *   Open and run the `.Rmd` file.
+3.  **Modeling (Python):**
+    *   Ensure you have Python 3 installed.
+    *   Set up a virtual environment (optional but recommended):
+        ```bash
+        python -m venv venv
+        source venv/bin/activate # On Windows use `venv\Scripts\activate`
+        ```
+    *   Install required Python libraries:
+        ```bash
+        pip install pandas numpy scikit-learn matplotlib xgboost lightgbm jupyter
+        ```
+    *   Launch Jupyter Notebook or Jupyter Lab:
+        ```bash
+        jupyter notebook
+        ```
+    *   Open and run the `Code_For_Model_Test_And_Fit.ipynb` notebook. Ensure the `Bmarrow_complete.csv` file is in the same directory or provide the correct path.
+
+## References
+
+*   **Dataset:** Sikora, Marek, Wróbel, Łukasz, and Gudyś, Adam. (2020). Bone marrow transplant: children. UCI Machine Learning Repository. [https://doi.org/10.24432/C5NP6Z](https://doi.org/10.24432/C5NP6Z)
+*   *Add other key references from your report if desired.*
+
+---
